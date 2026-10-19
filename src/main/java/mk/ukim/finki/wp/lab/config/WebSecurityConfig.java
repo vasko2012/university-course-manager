@@ -20,7 +20,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/courses", "/courses/search", "/courses/register", "/courses/users").permitAll()
+                .antMatchers("/courses", "/courses/search", "/courses/register").permitAll()
+                // Changing user roles is an admin-only action.
+                .antMatchers("/courses/users").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

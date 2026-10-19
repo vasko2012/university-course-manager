@@ -5,6 +5,7 @@ import mk.ukim.finki.wp.lab.model.enums.Role;
 import mk.ukim.finki.wp.lab.repository.jpa.JpaUserRepository;
 import mk.ukim.finki.wp.lab.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return user;
     }
 
     @Override
@@ -35,7 +40,9 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        return userRepository.save(new User(username, passwordEncoder.encode(password), Role.valueOf(role)));
+        // The very first account becomes the admin, so a fresh database can still be managed.
+        Role assigned = userRepository.count() == 0 ? Role.ROLE_ADMIN : Role.valueOf(role);
+        return userRepository.save(new User(username, passwordEncoder.encode(password), assigned));
     }
 
     @Override
