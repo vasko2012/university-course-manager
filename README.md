@@ -46,6 +46,8 @@ src/test/java                  JUnit and Selenium page-object tests
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=test
 ```
 
+The `test` profile loads sample teachers, students and courses on startup, and everything resets when the app stops.
+
 **With PostgreSQL (the default `prod` profile)**: create a database called `university`, then:
 
 ```bash
